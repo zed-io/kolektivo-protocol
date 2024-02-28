@@ -38,7 +38,7 @@ contract KolektivoTTD is Ownable, Pausable {
     /// @param address Recipient's address
     /// @param uint256 Amount of tokens to transfer
     function _transfer(address sender, address recipient, uint256 amount) internal override whenNotPaused {
-        super._transfer(sender, recipient, amount);
+        ERC20._transfer(sender, recipient, amount);
     }
 
     /// @notice This account has reached the maximum threshold to be
