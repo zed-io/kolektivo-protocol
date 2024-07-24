@@ -20,7 +20,9 @@ describe("Minting", function () {
       this.token_address = token_address;
     });
 
-    it("owner is the community steward");
+    it("owner is the community steward", async function () {
+      expect(await this.token.owner()).to.equal(this.signers.admin.address);
+    });
 
     it("should allow the community steward to mint to themselves", async function () {
       const initialSupply = await this.token.totalSupply();
@@ -38,6 +40,24 @@ describe("Minting", function () {
     it("should not allow non-comunity stewards to mint", async function () {
       const [_, nonOwner] = await ethers.getSigners();
       await expect(this.token.connect(nonOwner).mint(nonOwner.address, 100)).to.be.reverted;
+    });
+  });
+
+  describe("When Paused", async function () {
+    beforeEach(async function () {
+      const { token } = await this.loadFixture(deployTokenFixture);
+      this.token = token;
+      const [_, alice] = await ethers.getSigners();
+      await this.token.connect(this.signers.admin).mint(alice.address, 100n);
+      await this.token.connect(this.signers.admin).pause();
+    });
+
+    it("cannot mint when paused", async function () {
+      const transferAmount = 100n;
+      const [_, bob] = await ethers.getSigners();
+      await expect(
+        this.token.connect(this.signers.admin).mint(bob.address, transferAmount),
+      ).to.be.revertedWithCustomError(this.token, "EnforcedPause");
     });
   });
 });

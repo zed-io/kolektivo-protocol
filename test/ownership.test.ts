@@ -30,6 +30,13 @@ describe("Ownership", () => {
       expect(await this.token.owner()).to.equal(newOwner.address);
     });
 
-    it("only community steward can pause transfers");
+    it("only community steward can pause", async function () {
+      const [_, alice] = await ethers.getSigners();
+      await expect(this.token.connect(this.signers.admin).pause()).to.not.be.reverted;
+      await expect(await this.token.connect(this.signers.admin).paused()).to.be.true;
+      await expect(this.token.connect(this.signers.admin).unpause()).to.not.be.reverted;
+      await expect(this.token.connect(alice).pause()).to.be.reverted;
+      await expect(this.token.connect(alice).unpause()).to.be.reverted;
+    });
   });
 });
