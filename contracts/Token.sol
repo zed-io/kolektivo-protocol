@@ -2,7 +2,7 @@
 pragma solidity >=0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /// @title Kolektivo TTD Token
@@ -18,7 +18,7 @@ contract KolektivoTTD is Ownable, Pausable, ERC20 {
     /// @dev Check this list on transfer for special events
     mapping(address => bool) _isImpactPartner;
 
-    constructor() ERC20("Kolektivo Trinidad & Tobago Dollar", "KTTD") Ownable(msg.sender) {}
+    constructor() ERC20("Kolektivo Trinidad & Tobago Dollar", "KTTD") Ownable() {}
 
     /// @notice Disburse tokens to an account.
     /// @dev Only the owner can disburse tokens, and they are
@@ -37,11 +37,11 @@ contract KolektivoTTD is Ownable, Pausable, ERC20 {
         super._transfer(address(this), address(0), amount);
     }
 
-    function _update(address from, address to, uint256 amount) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
         if (_isImpactPartner[to]) {
             emit ImpactPartnerTransfer(from, to, amount);
         }
-        super._update(from, to, amount);
+        super._beforeTokenTransfer(from, to, amount);
     }
 
     function addPartner(address account) external onlyOwner {

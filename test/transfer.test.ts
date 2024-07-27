@@ -46,10 +46,7 @@ describe("Transfering", function () {
     it("can transfer when paused", async function () {
       const transferAmount = 100n;
       const [_, alice, bob] = await ethers.getSigners();
-      await expect(this.token.connect(alice).transfer(bob.address, transferAmount)).to.not.be.revertedWithCustomError(
-        this.token,
-        "EnforcedPause",
-      );
+      await expect(this.token.connect(alice).transfer(bob.address, transferAmount)).to.not.be.reverted;
     });
   });
 

@@ -50,14 +50,15 @@ describe("Minting", function () {
       const [_, alice] = await ethers.getSigners();
       await this.token.connect(this.signers.admin).mint(alice.address, 100n);
       await this.token.connect(this.signers.admin).pause();
+      await expect(await this.token.connect(this.signers.admin).paused()).to.be.true;
     });
 
     it("cannot mint when paused", async function () {
       const transferAmount = 100n;
       const [_, bob] = await ethers.getSigners();
-      await expect(
-        this.token.connect(this.signers.admin).mint(bob.address, transferAmount),
-      ).to.be.revertedWithCustomError(this.token, "EnforcedPause");
+      await expect(this.token.connect(this.signers.admin).mint(bob.address, transferAmount)).to.be.revertedWith(
+        "Pausable: paused",
+      );
     });
   });
 });
